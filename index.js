@@ -1,5 +1,5 @@
 // Simple looping calculator using Math.js.
-// input an equation in quotes, then add a list of 
+// input an equation in any format, then add a list of 
 // numbers to use. Separate vars by adding a space between 
 // new variables, and a comma between different variable 
 // values.
