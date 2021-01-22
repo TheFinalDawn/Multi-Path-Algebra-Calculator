@@ -21,8 +21,8 @@
 
 // And before someone complains about the sign, I'm a 
 // programmer, not a graphic designer lol
-//  It's about as good as you're gonna get, I can't draw
-
+// It's about as good as you're gonna get, I can't draw
+// Repl.it version written by @Resetium.
 
 
 
