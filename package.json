@@ -1,6 +1,6 @@
 {
   "name": "Multi-Path-Algebra-Calculator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^4.1.0",
-    "got": "^11.8.1",
     "prompt-sync": "^4.2.0"
   }
 }

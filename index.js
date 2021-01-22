@@ -3,9 +3,15 @@
 // numbers to use. Separate vars by adding a space between 
 // new variables, and a comma between different variable 
 // values.
-// NOTE: Do not add anything to the right of the equal sign.
-// Example: 
-
+// NOTES: 
+// Do not add anything to the right of the equal sign.
+// Convert fractions, square roots, etc. to their decimal 
+// forms.
+// Please don't use i, I'm not even gonna try to implement 
+// that thing.
+/*=========*\ 
+|| Example ||
+\*=========*/
 // Equation: "2ab"
 // Inputs: 1,2,3 3,2,1 (input variable lists as they appear 
 // in the equation)
@@ -13,15 +19,9 @@
 // Note this will be the same if you put the equation as 
 // 2ba and keep the variables the same!
 
-
-
-
-
-
-
-
-
-
+// And before someone complains about the sign, I'm a 
+// programmer, not a graphic designer lol
+//  It's about as good as you're gonna get, I can't draw
 
 
 
@@ -30,7 +30,7 @@
 
 const getInput = require('prompt-sync')();
 const chalk = require('chalk');
-const got = require('got');
+const http = require('http');
 const combineArrays = require('./combineArrays.js');
 // It's so long I won't bother trying to stuff it in here.
 console.log('Please input equation.');
@@ -44,7 +44,7 @@ for (i in vars) {
 }
 for (i in vars) {
 	for (k in vars[i]) {
-		vars[i][k] = parseInt(vars[i][k], 10);
+		vars[i][k] = parseFloat(vars[i][k], 10);
 		if (isNaN(vars[i][k])) {
 			console.error(chalk.yellow(`SYNTAX ERROR: Variable ${(parseInt(i) + 1)}, ${(parseInt(k) + 1)} is not a number.`));
 			console.info(chalk.grey("Hint: only pass numbers into this part."));
@@ -66,19 +66,57 @@ if (varLetters.length != vars.length) {
 	process.exit(9);
 }
 // variables identified, now create variable combinations and somehow replace variables in the actual equation copies.
-const combos = combineArrays.combineArrays(vars);
+let combos = combineArrays.combineArrays(vars);
+for (i in combos) {
+	combos[i]=combos[i].split(" ");
+}
+combos = combos.filter(Boolean);
 // this outputs every combo in the form of ["x1x2...xn",...]
 let equations = [];
-console.log(varLetters);
 for (i in combos) {
 	let replace = equation;
 	for (let k = 0; k < combos[i].length; k++) {
-		replace = replace.replace(varLetters[k], `(${combos[i][k]})`);
+		replace = replace.replace(new RegExp(`${varLetters[k]}`, "gi"), `(${combos[i][k]})`);
 	}
 	equations.push(replace);
 }
-let final = null;
-got.post("http://api.mathjs.org/v4/", { headers: "content-type: application/json", json: equations })
-	.then(response => {
-		final = response.data;
-	}).catch(err => console.log(chalk.red(err)));
+let temporary = {"expr": equations};
+const options = {
+	method: "POST",
+	host: "api.mathjs.org",
+	path: "/v4",
+	port: 80,
+	headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(JSON.stringify(temporary))
+    }
+}
+const final = new Promise((resolve, reject) => {
+	let req = http.request(options, (resp) => {
+  let data = '';
+
+  // A chunk of data has been received.
+  resp.on('data', (chunk) => {
+    data += chunk;
+  });
+
+  // The whole response has been received. Print out the result.
+  resp.on('end', () => {
+		resolve(JSON.parse(data).result);
+  });
+
+	}).on("error", (err) => {
+		reject(err)
+		console.log(JSON.parse(data).error);
+	});
+
+	req.end(JSON.stringify(temporary));
+});
+final.then((response) => {
+	for (i in response) {
+		console.log(`${combos[i].toString()}: ${response[i]}`)
+	}
+}).catch((error) => {
+	console.log(error);
+});
+console.log(final);

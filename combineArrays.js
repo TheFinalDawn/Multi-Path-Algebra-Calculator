@@ -45,7 +45,7 @@ function formCombination( odometer, array_of_arrays ){
     // In Functional Programmingese (Henny Youngman one-liner):
     return odometer.reduce(
       function(accumulator, odometer_value, odometer_index){
-        return "" + accumulator + array_of_arrays[odometer_index][odometer_value];
+        return "" + accumulator + array_of_arrays[odometer_index][odometer_value] + " ";
       },
       ""
     );
